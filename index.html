@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Apparel Selection Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #cc0000 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .points-tracker {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .points-display {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .points-remaining {
+            font-size: 14px;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .instructions {
+            background: #f8f9fa;
+            padding: 25px;
+            border-left: 4px solid #cc0000;
+            margin: 20px 30px;
+            border-radius: 4px;
+        }
+        
+        .instructions h2 {
+            color: #1a1a1a;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            color: #333;
+            line-height: 1.8;
+        }
+        
+        .form-content {
+            padding: 30px;
+        }
+        
+        .item-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .item-card.selected {
+            border-color: #cc0000;
+            background: #fff5f5;
+        }
+        
+        .item-image {
+            flex-shrink: 0;
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 5px;
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex: 1;
+        }
+        
+        .item-points {
+            background: #cc0000;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .quantity-control label {
+            font-weight: 600;
+            color: #333;
+            min-width: 70px;
+        }
+        
+        .quantity-btn {
+            width: 36px;
+            height: 36px;
+            border: 2px solid #cc0000;
+            background: white;
+            color: #cc0000;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quantity-btn:hover:not(:disabled) {
+            background: #cc0000;
+            color: white;
+        }
+        
+        .quantity-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        
+        .quantity-display {
+            min-width: 40px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        
+        .options-section {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .options-section.visible {
+            display: block;
+        }
+        
+        .item-instance {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .item-instance-label {
+            font-weight: 700;
+            color: #cc0000;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .option-group {
+            margin-bottom: 12px;
+        }
+        
+        .option-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .option-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .option-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .option-group select:focus {
+            outline: none;
+            border-color: #cc0000;
+        }
+        
+        .employee-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .employee-info input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .employee-info input:focus {
+            outline: none;
+            border-color: #cc0000;
+        }
+        
+        .submit-section {
+            text-align: center;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #cc0000 0%, #8b0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            min-width: 200px;
+        }
+        
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(204, 0, 0, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .submit-btn.submitting {
+            background: #666;
+        }
+        
+        .submit-instruction {
+            color: #666;
+            font-size: 13px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        .error-message {
+            color: #721c24;
+            background: #f8d7da;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid #cc0000;
+        }
+        
+        .error-message.visible {
+            display: block;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            display: none;
+        }
+        
+        .success-message.visible {
+            display: block;
+        }
+        
+        @media (max-width: 600px) {
+            .item-card {
+                flex-direction: column;
+            }
+            
+            .item-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Apparel Selection Form</h1>
+            <div class="points-tracker">
+                <div class="points-display">
+                    <span id="pointsUsed">0</span> / 4 Points Used
+                </div>
+                <div class="points-remaining">
+                    <span id="pointsRemaining">4</span> points remaining
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h2>📋 Instructions</h2>
+            <ul>
+                <li>You have <strong>4 total points</strong> to spend on apparel items</li>
+                <li>Each item has a point value - select any combination that doesn't exceed 4 points</li>
+                <li>Use the + and - buttons to adjust quantities</li>
+                <li>When selecting multiple quantities, you can choose different sizes and colors for each item</li>
+                <li>Your point total updates automatically as you make selections</li>
+            </ul>
+        </div>
+        
+        <div class="form-content">
+            <div class="employee-info">
+                <label for="employeeName"><strong>Your Name:</strong></label>
+                <input type="text" id="employeeName" placeholder="Enter your full name" required>
+                
+                <label for="employeeEmail" style="margin-top: 15px; display: block;"><strong>Your Email:</strong></label>
+                <input type="email" id="employeeEmail" placeholder="Enter your email address" required>
+            </div>
+            
+            <div id="itemsContainer"></div>
+            
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+        
+        <div class="submit-section">
+            <button class="submit-btn" id="submitBtn">Submit Your Selection</button>
+            <div class="submit-instruction">Please click only once. Submission may take 5-10 seconds.</div>
+            <div class="success-message" id="successMessage">
+                <h2>✓ Submission Successful!</h2>
+                <p>Your apparel selections have been recorded. Thank you!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SHEET_URL = 'https://script.google.com/macros/s/AKfycbw5AgFpVOTcZmZ18F5z6_pZLC-fH-pNEkNePujyiJArFjxE8Y8G5yoKfx4j4eGJ17KLuw/exec';
+        
+        const items = [
+            {
+                name: "Eddie Bauer Men's Black Softshell Jacket",
+                points: 4,
+                colors: ["Black"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/files/EB530-Black-F_1024x1024.jpg?v=1763991129"
+            },
+            {
+                name: "Eddie Bauer Women's Black Softshell Jacket",
+                points: 4,
+                colors: ["Black"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/files/EB531-Black-F_1024x1024.jpg?v=1763991124"
+            },
+            {
+                name: "UNRL Men's Highlands Quarter Zip",
+                points: 4,
+                colors: ["Black", "White", "Gray"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
+                image: "https://www.merchology.com/cdn/shop/products/HLNDQZIP-SBLK-F_1024x1024.jpg?v=1679922181"
+            },
+            {
+                name: "UNRL Women's LuxBreak Half-Zip Pullover",
+                points: 4,
+                colors: ["Black", "Cream", "Heather Gray"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL"],
+                image: "https://www.merchology.com/cdn/shop/products/LHP-HGRY-F_1024x1024.jpg?v=1710937643"
+            },
+            {
+                name: "Nike Men's Dri-FIT Micro Pique 2.0 Polo",
+                points: 3,
+                colors: ["Black", "Red"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL", "L-Tall", "XL-Tall", "2XL-Tall", "3XL-Tall", "4XL-Tall"],
+                image: "https://www.merchology.com/cdn/shop/files/NKDC1963-Black-F_1024x1024.jpg?v=1750335341"
+            },
+            {
+                name: "Nike Women's Dri-FIT Micro Pique 2.0 Polo",
+                points: 3,
+                colors: ["Black", "Red"],
+                sizes: ["S", "M", "L", "XL", "2XL"],
+                image: "https://www.merchology.com/cdn/shop/files/NKDC1991-Black-F_1024x1024.jpg?v=1750335492"
+            },
+            {
+                name: "Zusa Men's Chilly Fleece Quarter Zip",
+                points: 2,
+                colors: ["Oatmeal", "Charcoal"],
+                sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
+                image: "https://www.merchology.com/cdn/shop/products/M-chilly-sage-front_1024x1024.png?v=1754068810"
+            },
+            {
+                name: "Zusa Women's Chilly Fleece Quarter Zip",
+                points: 2,
+                colors: ["Oatmeal", "Charcoal"],
+                sizes: ["S", "M", "L", "XL", "2XL", "3XL"],
+                image: "https://www.merchology.com/cdn/shop/products/w-chilly-oatmeal-front_b2d75f69-7456-47a8-94e9-58e5a0db11b4_1024x1024.png?v=1754069005"
+            },
+            {
+                name: "Port Authority Men's Microfleece Jacket",
+                points: 2,
+                colors: ["Black", "Gray"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/products/F223_pearl_grey_1024x1024.jpg?v=1748900934"
+            },
+            {
+                name: "Port Authority Women's Microfleece Jacket",
+                points: 2,
+                colors: ["Black", "Gray", "White"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/products/L223_pearlgrey_1024x1024.jpg?v=1748900928"
+            },
+            {
+                name: "Port & Company Men's Essential T-Shirt",
+                points: 1,
+                colors: ["Black", "Red", "White"],
+                sizes: ["S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/products/PC54_Red_Flat_Front_2011_1024x1024.jpg?v=1748901198"
+            },
+            {
+                name: "Port & Company Women's Performance Tee",
+                points: 1,
+                colors: ["Black", "Red", "White"],
+                sizes: ["XS", "S", "M", "L", "XL", "2XL", "3XL", "4XL"],
+                image: "https://www.merchology.com/cdn/shop/products/LPC380-Red-F_1024x1024.jpg?v=1748892686"
+            },
+            {
+                name: "New Era 39THIRTY Black Structured Stretch Cotton Cap",
+                points: 1,
+                colors: ["Black"],
+                sizes: ["S/M", "M/L", "L/XL"],
+                image: "https://www.merchology.com/cdn/shop/products/NE1000-Black_1024x1024.jpg?v=1756320737"
+            },
+            {
+                name: "Zusa Black/Black Open Road Trucker Cap",
+                points: 1,
+                colors: ["Black"],
+                sizes: ["One Size Fits All"],
+                image: "https://www.merchology.com/cdn/shop/products/IMG_4203_1024x1024.png?v=1754068808"
+            }
+        ];
+
+        let selections = {};
+        let totalPoints = 0;
+        let isSubmitting = false;
+
+        function initializeForm() {
+            const container = document.getElementById('itemsContainer');
+            
+            items.forEach((item, index) => {
+                selections[index] = { quantity: 0, instances: [] };
+                
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                card.id = `item-${index}`;
+                
+                card.innerHTML = `
+                    <div class="item-image">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22%3E%3Crect width=%22120%22 height=%22120%22 fill=%22%23e9ecef%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 text-anchor=%22middle%22 dy=%22.3em%22 fill=%22%23999%22 font-family=%22sans-serif%22 font-size=%2212%22%3ENo Image%3C/text%3E%3C/svg%3E'">
+                    </div>
+                    <div class="item-content">
+                        <div class="item-header">
+                            <div class="item-name">${item.name}</div>
+                            <div class="item-points">${item.points} ${item.points === 1 ? 'point' : 'points'}</div>
+                        </div>
+                        
+                        <div class="quantity-control">
+                            <label>Quantity:</label>
+                            <button class="quantity-btn" onclick="decreaseQuantity(${index})">−</button>
+                            <div class="quantity-display" id="qty-${index}">0</div>
+                            <button class="quantity-btn" onclick="increaseQuantity(${index})">+</button>
+                        </div>
+                        
+                        <div class="options-section" id="options-${index}"></div>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        function increaseQuantity(index) {
+            if (isSubmitting) return;
+            
+            const item = items[index];
+            const newTotal = totalPoints + item.points;
+            
+            if (newTotal <= 4) {
+                selections[index].quantity++;
+                selections[index].instances.push({ size: '', color: '' });
+                updateDisplay(index);
+            }
+        }
+
+        function decreaseQuantity(index) {
+            if (isSubmitting) return;
+            
+            if (selections[index].quantity > 0) {
+                selections[index].quantity--;
+                selections[index].instances.pop();
+                updateDisplay(index);
+            }
+        }
+
+        function updateInstanceSelection(itemIndex, instanceIndex, field, value) {
+            if (isSubmitting) return;
+            selections[itemIndex].instances[instanceIndex][field] = value;
+        }
+
+        function updateDisplay(index) {
+            const item = items[index];
+            const qtyDisplay = document.getElementById(`qty-${index}`);
+            const optionsSection = document.getElementById(`options-${index}`);
+            const card = document.getElementById(`item-${index}`);
+            
+            qtyDisplay.textContent = selections[index].quantity;
+            
+            if (selections[index].quantity > 0) {
+                optionsSection.classList.add('visible');
+                card.classList.add('selected');
+                
+                // Generate individual instance sections
+                optionsSection.innerHTML = '';
+                for (let i = 0; i < selections[index].quantity; i++) {
+                    const instanceDiv = document.createElement('div');
+                    instanceDiv.className = 'item-instance';
+                    instanceDiv.innerHTML = `
+                        <div class="item-instance-label">Item #${i + 1}</div>
+                        <div class="option-group">
+                            <label>Size:</label>
+                            <select id="size-${index}-${i}" onchange="updateInstanceSelection(${index}, ${i}, 'size', this.value)">
+                                <option value="">Select size</option>
+                                ${item.sizes.map(size => `<option value="${size}" ${selections[index].instances[i].size === size ? 'selected' : ''}>${size}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>Color:</label>
+                            <select id="color-${index}-${i}" onchange="updateInstanceSelection(${index}, ${i}, 'color', this.value)">
+                                <option value="">Select color</option>
+                                ${item.colors.map(color => `<option value="${color}" ${selections[index].instances[i].color === color ? 'selected' : ''}>${color}</option>`).join('')}
+                            </select>
+                        </div>
+                    `;
+                    optionsSection.appendChild(instanceDiv);
+                }
+            } else {
+                optionsSection.classList.remove('visible');
+                card.classList.remove('selected');
+                optionsSection.innerHTML = '';
+            }
+            
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            totalPoints = 0;
+            items.forEach((item, index) => {
+                totalPoints += selections[index].quantity * item.points;
+            });
+            
+            document.getElementById('pointsUsed').textContent = totalPoints;
+            document.getElementById('pointsRemaining').textContent = 4 - totalPoints;
+            
+            const submitBtn = document.getElementById('submitBtn');
+            if (!isSubmitting) {
+                submitBtn.disabled = totalPoints === 0 || totalPoints > 4;
+            }
+        }
+
+        async function submitForm() {
+            if (isSubmitting) return;
+            
+            const errorMsg = document.getElementById('errorMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            errorMsg.classList.remove('visible');
+            
+            const name = document.getElementById('employeeName').value.trim();
+            const email = document.getElementById('employeeEmail').value.trim();
+            
+            if (!name || !email) {
+                errorMsg.textContent = 'Please enter your name and email address.';
+                errorMsg.classList.add('visible');
+                return;
+            }
+            
+            if (totalPoints === 0) {
+                errorMsg.textContent = 'Please select at least one item.';
+                errorMsg.classList.add('visible');
+                return;
+            }
+            
+            if (totalPoints > 4) {
+                errorMsg.textContent = 'You have exceeded the 4-point limit. Please adjust your selections.';
+                errorMsg.classList.add('visible');
+                return;
+            }
+            
+            const selectedItems = [];
+            items.forEach((item, index) => {
+                if (selections[index].quantity > 0) {
+                    // Check that all instances have size and color selected
+                    for (let i = 0; i < selections[index].instances.length; i++) {
+                        const instance = selections[index].instances[i];
+                        if (!instance.size || !instance.color) {
+                            errorMsg.textContent = `Please select both size and color for all items in: ${item.name} (Item #${i + 1})`;
+                            errorMsg.classList.add('visible');
+                            throw new Error('Missing size or color');
+                        }
+                        
+                        selectedItems.push({
+                            name: item.name,
+                            itemNumber: i + 1,
+                            size: instance.size,
+                            color: instance.color,
+                            points: item.points
+                        });
+                    }
+                }
+            });
+            
+            // Prevent multiple submissions
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting... Please Wait';
+            submitBtn.classList.add('submitting');
+            
+            const submissionData = {
+                timestamp: new Date().toISOString(),
+                name: name,
+                email: email,
+                totalPoints: totalPoints,
+                items: selectedItems
+            };
+            
+            try {
+                const response = await fetch(SHEET_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(submissionData)
+                });
+                
+                document.querySelector('.form-content').style.display = 'none';
+                document.getElementById('successMessage').classList.add('visible');
+                document.getElementById('submitBtn').style.display = 'none';
+            } catch (error) {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Your Selection';
+                submitBtn.classList.remove('submitting');
+                errorMsg.textContent = 'There was an error submitting your form. Please try again or contact IT support.';
+                errorMsg.classList.add('visible');
+                console.error('Submission error:', error);
+            }
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', submitForm);
+        
+        initializeForm();
+    </script>
+</body>
+</html>
